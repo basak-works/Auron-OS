@@ -16,16 +16,43 @@ export default function AuronOS() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleExecute = () => {
+  // 🧠 আসল API কানেকশন (Frontend to Backend)
+  const handleExecute = async () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: "user", content: input }]);
+    const userMessage = input;
+    
+    // ইউজারের মেসেজ স্ক্রিনে দেখানো
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setInput("");
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "ai", content: "Processing request through Auron Intelligence Core... [Backend Disconnected]" }
-      ]);
-    }, 1000);
+
+    // আপাতত লোডিং মেসেজ দেখানো
+    setMessages((prev) => [...prev, { role: "ai", content: "Processing request through Auron Intelligence Core..." }]);
+
+    try {
+      // লোকাল ব্যাকএন্ডের সাথে যোগাযোগ
+      const response = await fetch("http://127.0.0.1:8000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      
+      const data = await response.json();
+      
+      // লোডিং মেসেজ সরিয়ে জেমিনির আসল উত্তর বসানো
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages.pop(); 
+        newMessages.push({ role: "ai", content: data.reply });
+        return newMessages;
+      });
+    } catch (error) {
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages.pop();
+        newMessages.push({ role: "ai", content: "SYSTEM ERROR: Neural Core Offline or Unreachable. Please check backend server." });
+        return newMessages;
+      });
+    }
   };
 
   // ==========================================
@@ -63,7 +90,7 @@ export default function AuronOS() {
   }
 
   // ==========================================
-  // 2. MAIN APPLICATION (Fixed Viewport - No White Gaps)
+  // 2. MAIN APPLICATION
   // ==========================================
   return (
     <main className="fixed inset-0 bg-[#050505] text-white flex font-sans overflow-hidden selection:bg-cyan-500/30">
@@ -71,9 +98,7 @@ export default function AuronOS() {
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
 
-      {/* -------------------------------------- */}
       {/* DESKTOP SIDEBAR */}
-      {/* -------------------------------------- */}
       <aside className="hidden lg:flex w-[260px] flex-col border-r border-gray-800 bg-[#080808]/80 backdrop-blur-xl z-20 h-full flex-shrink-0">
         <div className="p-6 border-b border-gray-800">
           <h1 className="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">AURON</h1>
@@ -106,12 +131,9 @@ export default function AuronOS() {
         </nav>
       </aside>
 
-      {/* -------------------------------------- */}
       {/* MAIN CONTENT AREA */}
-      {/* -------------------------------------- */}
       <div className="flex-1 flex flex-col relative z-10 w-full h-full overflow-hidden">
         
-        {/* TOP HEADER */}
         <header className="flex justify-between items-center p-4 lg:px-8 lg:py-5 border-b border-gray-800/50 bg-[#0a0a0a]/80 backdrop-blur-md flex-shrink-0">
           <div className="flex items-center gap-4 lg:hidden">
             <button className="text-gray-400 text-xl">☰</button>
@@ -131,15 +153,12 @@ export default function AuronOS() {
           </div>
         </header>
 
-        {/* DYNAMIC SCROLLABLE CONTAINER */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
           <AnimatePresence mode="wait">
             
-            {/* VIEW: HOME / DASHBOARD */}
             {activeTab === "HOME" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="h-full flex flex-col gap-6">
                 
-                {/* Status Cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="bg-[#0f1115] border border-gray-800 p-4 md:p-6 rounded-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 text-4xl group-hover:scale-110 transition">⚡</div>
@@ -160,10 +179,7 @@ export default function AuronOS() {
                   </div>
                 </div>
 
-                {/* Main Dashboard UI */}
                 <div className="flex flex-col lg:flex-row gap-6 flex-1">
-                  
-                  {/* Left: AI Core Visualizer */}
                   <div className="flex-1 bg-gradient-to-b from-[#0a0c10] to-[#050505] border border-gray-800 rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden min-h-[250px]">
                     <div className="w-32 h-32 border border-cyan-500/30 rounded-full flex items-center justify-center relative animate-[spin_20s_linear_infinite]">
                        <div className="w-24 h-24 border border-purple-500/30 rounded-full absolute animate-[spin_15s_linear_infinite_reverse]"></div>
@@ -171,8 +187,6 @@ export default function AuronOS() {
                     </div>
                     <p className="mt-8 font-mono tracking-[0.2em] text-cyan-500 text-xs md:text-sm z-10">NEURAL CORE SYNCED</p>
                   </div>
-
-                  {/* Right: Actions */}
                   <div className="lg:w-1/3 flex flex-col gap-4">
                     <div className="lg:hidden grid grid-cols-2 gap-4">
                       {['💬 Quick Chat', '📄 Files', '🕵️ Network Scan', '⚙️ Settings'].map(act => (
@@ -193,7 +207,6 @@ export default function AuronOS() {
               </motion.div>
             )}
 
-            {/* VIEW: AI CORE */}
             {activeTab === "AI" && (
               <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col">
                 <div className="flex-1 overflow-y-auto space-y-6 pb-4 scrollbar-hide">
@@ -201,7 +214,8 @@ export default function AuronOS() {
                     <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[85%] md:max-w-[70%] p-4 rounded-2xl ${msg.role === "user" ? "bg-gradient-to-br from-cyan-900/40 to-blue-900/40 border border-cyan-800/50 text-white rounded-br-none" : "bg-[#0f1115] border border-gray-800 text-gray-300 font-mono text-sm rounded-tl-none shadow-[0_4px_20px_rgba(0,0,0,0.5)]"}`}>
                         {msg.role === "ai" && <div className="text-cyan-500 text-xs mb-2 tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> AURON_RESPONSE</div>}
-                        {msg.content}
+                        {/* Markdown / Line breaks support */}
+                        <div className="whitespace-pre-wrap">{msg.content}</div>
                       </div>
                     </div>
                   ))}
@@ -219,7 +233,6 @@ export default function AuronOS() {
               </motion.div>
             )}
 
-            {/* VIEW: MEMORY VAULT (New Addition) */}
             {activeTab === "VAULT" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full">
                 <div className="bg-[#0f1115] border border-gray-800 rounded-3xl p-6 md:p-8">
@@ -242,7 +255,6 @@ export default function AuronOS() {
               </motion.div>
             )}
 
-            {/* VIEW: SECURITY CENTER */}
             {activeTab === "SECURITY" && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full">
                  <div className="bg-[#0f1115] border border-gray-800 rounded-3xl p-6 md:p-8">
@@ -271,7 +283,6 @@ export default function AuronOS() {
               </motion.div>
             )}
 
-            {/* VIEW: FALLBACK FOR OTHER TABS */}
             {["AGENTS", "AUTO"].includes(activeTab) && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col items-center justify-center opacity-50">
                 <div className="text-6xl mb-6">⚙️</div>
@@ -283,9 +294,6 @@ export default function AuronOS() {
           </AnimatePresence>
         </div>
 
-        {/* -------------------------------------- */}
-        {/* MOBILE BOTTOM NAVIGATION (Fixed to bottom) */}
-        {/* -------------------------------------- */}
         <nav className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-xl border-t border-gray-800 flex justify-around p-2 pb-6 z-50">
           {[
             { id: "HOME", icon: "🏠", label: "Home" },
