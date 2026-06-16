@@ -12,7 +12,7 @@ export default function AuronOS() {
 
   // Boot Sequence
   useEffect(() => {
-    const timer = setTimeout(() => setIsBooting(false), 3500);
+    const timer = setTimeout(() => setIsBooting(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -23,18 +23,17 @@ export default function AuronOS() {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "ai", content: "Processing request through Auron Intelligence Core... [API Disconnected]" }
+        { role: "ai", content: "Processing request through Auron Intelligence Core... [Backend Disconnected]" }
       ]);
     }, 1000);
   };
 
   // ==========================================
-  // 1. SPLASH / BOOT SCREEN (Mobile & Desktop)
+  // 1. SPLASH / BOOT SCREEN (Fixed Viewport)
   // ==========================================
   if (isBooting) {
     return (
-      <main className="h-screen w-screen bg-[#020202] text-cyan-500 flex flex-col items-center justify-center font-mono relative overflow-hidden">
-        {/* Animated Grid Background */}
+      <main className="fixed inset-0 bg-[#020202] text-cyan-500 flex flex-col items-center justify-center font-mono z-50 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:40px_40px] animate-[pulse_4s_ease-in-out_infinite]"></div>
         
         <motion.div animate={{ scale: [0.9, 1.1, 1], opacity: [0, 1, 1] }} transition={{ duration: 1.5 }}>
@@ -46,7 +45,7 @@ export default function AuronOS() {
 
         <motion.h1 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          className="text-4xl md:text-6xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-4"
+          className="text-4xl md:text-6xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600 mb-4"
         >
           AURON OS
         </motion.h1>
@@ -55,7 +54,7 @@ export default function AuronOS() {
         
         <div className="w-64 md:w-96 h-1 bg-gray-900 rounded-full overflow-hidden">
           <motion.div 
-            initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 3, ease: "easeInOut" }}
+            initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 2.5, ease: "easeInOut" }}
             className="h-full bg-cyan-400 shadow-[0_0_15px_#06b6d4]"
           />
         </div>
@@ -64,18 +63,18 @@ export default function AuronOS() {
   }
 
   // ==========================================
-  // 2. MAIN APPLICATION (Responsive Interface)
+  // 2. MAIN APPLICATION (Fixed Viewport - No White Gaps)
   // ==========================================
   return (
-    <main className="h-screen w-screen bg-[#050505] text-white flex font-sans overflow-hidden selection:bg-cyan-500/30">
+    <main className="fixed inset-0 bg-[#050505] text-white flex font-sans overflow-hidden selection:bg-cyan-500/30">
       
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
 
       {/* -------------------------------------- */}
-      {/* DESKTOP SIDEBAR (Hidden on Mobile) */}
+      {/* DESKTOP SIDEBAR */}
       {/* -------------------------------------- */}
-      <aside className="hidden lg:flex w-[260px] flex-col border-r border-gray-800 bg-[#080808]/80 backdrop-blur-xl z-20">
+      <aside className="hidden lg:flex w-[260px] flex-col border-r border-gray-800 bg-[#080808]/80 backdrop-blur-xl z-20 h-full flex-shrink-0">
         <div className="p-6 border-b border-gray-800">
           <h1 className="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">AURON</h1>
           <div className="flex items-center gap-2 mt-2 text-xs font-mono text-gray-400">
@@ -83,7 +82,7 @@ export default function AuronOS() {
           </div>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2 font-mono text-sm">
+        <nav className="flex-1 p-4 space-y-2 font-mono text-sm overflow-y-auto">
           {[
             { id: "HOME", icon: "◉", label: "Dashboard" },
             { id: "AI", icon: "🧠", label: "AI Core" },
@@ -110,17 +109,15 @@ export default function AuronOS() {
       {/* -------------------------------------- */}
       {/* MAIN CONTENT AREA */}
       {/* -------------------------------------- */}
-      <div className="flex-1 flex flex-col relative z-10 w-full">
+      <div className="flex-1 flex flex-col relative z-10 w-full h-full overflow-hidden">
         
-        {/* TOP HEADER (Mobile & Desktop) */}
-        <header className="flex justify-between items-center p-4 lg:px-8 lg:py-5 border-b border-gray-800/50 bg-[#0a0a0a]/80 backdrop-blur-md">
-          {/* Mobile Menu Icon & Title */}
+        {/* TOP HEADER */}
+        <header className="flex justify-between items-center p-4 lg:px-8 lg:py-5 border-b border-gray-800/50 bg-[#0a0a0a]/80 backdrop-blur-md flex-shrink-0">
           <div className="flex items-center gap-4 lg:hidden">
             <button className="text-gray-400 text-xl">☰</button>
             <h1 className="text-lg font-black tracking-widest text-cyan-400">AURON OS</h1>
           </div>
           
-          {/* Desktop Search & Profile */}
           <div className="hidden lg:flex flex-1 max-w-md mx-auto items-center bg-gray-900/50 border border-gray-800 rounded-full px-4 py-2">
             <span className="text-gray-500 mr-2">🔍</span>
             <input type="text" placeholder="Search knowledge base..." className="bg-transparent border-none outline-none text-sm w-full text-gray-300 placeholder-gray-600" />
@@ -134,8 +131,8 @@ export default function AuronOS() {
           </div>
         </header>
 
-        {/* DYNAMIC CONTENT CONTAINER */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scrollbar-hide pb-24 lg:pb-8">
+        {/* DYNAMIC SCROLLABLE CONTAINER */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 lg:pb-8">
           <AnimatePresence mode="wait">
             
             {/* VIEW: HOME / DASHBOARD */}
@@ -163,37 +160,32 @@ export default function AuronOS() {
                   </div>
                 </div>
 
-                {/* Desktop 3D Core & Recent Tasks / Mobile Quick Actions */}
+                {/* Main Dashboard UI */}
                 <div className="flex flex-col lg:flex-row gap-6 flex-1">
                   
                   {/* Left: AI Core Visualizer */}
                   <div className="flex-1 bg-gradient-to-b from-[#0a0c10] to-[#050505] border border-gray-800 rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden min-h-[250px]">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1)_0%,transparent_70%)]"></div>
-                    <div className="w-32 h-32 md:w-48 md:h-48 border border-cyan-500/30 rounded-full flex items-center justify-center relative animate-[spin_20s_linear_infinite]">
-                       <div className="w-24 h-24 md:w-32 md:h-32 border border-purple-500/30 rounded-full absolute animate-[spin_15s_linear_infinite_reverse]"></div>
-                       <div className="w-12 h-12 md:w-16 md:h-16 bg-cyan-400 rounded-full blur-md animate-pulse"></div>
+                    <div className="w-32 h-32 border border-cyan-500/30 rounded-full flex items-center justify-center relative animate-[spin_20s_linear_infinite]">
+                       <div className="w-24 h-24 border border-purple-500/30 rounded-full absolute animate-[spin_15s_linear_infinite_reverse]"></div>
+                       <div className="w-12 h-12 bg-cyan-400 rounded-full blur-md animate-pulse"></div>
                     </div>
                     <p className="mt-8 font-mono tracking-[0.2em] text-cyan-500 text-xs md:text-sm z-10">NEURAL CORE SYNCED</p>
                   </div>
 
-                  {/* Right: Action Area */}
+                  {/* Right: Actions */}
                   <div className="lg:w-1/3 flex flex-col gap-4">
-                    {/* Mobile Quick Actions */}
                     <div className="lg:hidden grid grid-cols-2 gap-4">
                       {['💬 Quick Chat', '📄 Files', '🕵️ Network Scan', '⚙️ Settings'].map(act => (
-                        <button key={act} onClick={() => setActiveTab(act.includes('Chat') ? 'AI' : act.includes('Scan') ? 'SECURITY' : 'HOME')} className="bg-[#0f1115] border border-gray-800 p-4 rounded-2xl text-sm font-medium text-gray-300 hover:border-cyan-500/50 transition flex items-center gap-2">
+                        <button key={act} onClick={() => setActiveTab(act.includes('Chat') ? 'AI' : act.includes('Files') ? 'VAULT' : act.includes('Scan') ? 'SECURITY' : 'HOME')} className="bg-[#0f1115] border border-gray-800 p-4 rounded-2xl text-sm text-gray-300 hover:border-cyan-500 transition">
                           {act}
                         </button>
                       ))}
                     </div>
-
-                    {/* Desktop Recent Tasks */}
                     <div className="hidden lg:flex flex-col bg-[#0f1115] border border-gray-800 rounded-2xl p-6 flex-1">
                       <h3 className="font-mono text-sm text-gray-500 tracking-widest mb-4 border-b border-gray-800 pb-2">RECENT OPERATIONS</h3>
                       <ul className="space-y-4">
-                        <li className="flex items-start gap-3"><span className="text-green-500">✓</span> <div><p className="text-sm text-gray-200">Analyzed WBJEE Physics Chapter 4 PDF</p><p className="text-xs text-gray-600">Saved to Vector DB</p></div></li>
-                        <li className="flex items-start gap-3"><span className="text-green-500">✓</span> <div><p className="text-sm text-gray-200">Network Scan (Termux Environment)</p><p className="text-xs text-gray-600">No vulnerabilities found</p></div></li>
-                        <li className="flex items-start gap-3"><span className="text-cyan-500">⟳</span> <div><p className="text-sm text-gray-200">Training Self-Improvement Loop</p><p className="text-xs text-cyan-600/50 animate-pulse">Processing...</p></div></li>
+                        <li className="flex gap-3"><span className="text-green-500">✓</span> <div><p className="text-sm text-gray-200">Analyzed WBJEE Physics PDF</p><p className="text-xs text-gray-600">Saved to Vector DB</p></div></li>
+                        <li className="flex gap-3"><span className="text-green-500">✓</span> <div><p className="text-sm text-gray-200">Network Scan Complete</p><p className="text-xs text-gray-600">No threats detected</p></div></li>
                       </ul>
                     </div>
                   </div>
@@ -201,7 +193,7 @@ export default function AuronOS() {
               </motion.div>
             )}
 
-            {/* VIEW: AI CORE (Chat Interface) */}
+            {/* VIEW: AI CORE */}
             {activeTab === "AI" && (
               <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="h-full flex flex-col">
                 <div className="flex-1 overflow-y-auto space-y-6 pb-4 scrollbar-hide">
@@ -215,17 +207,36 @@ export default function AuronOS() {
                   ))}
                 </div>
                 
-                {/* Full Screen Input Area */}
-                <div className="bg-[#0f1115] border border-gray-700 rounded-2xl p-2 flex items-center gap-2 shadow-[0_0_30px_rgba(6,182,212,0.1)]">
-                  <button className="p-3 text-gray-400 hover:text-cyan-400 transition hidden md:block">📎</button>
+                <div className="bg-[#0f1115] border border-gray-700 rounded-2xl p-2 flex items-center gap-2 flex-shrink-0 mt-2">
+                  <button className="p-3 text-gray-400 hidden md:block">📎</button>
                   <input
                     type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleExecute()}
                     placeholder="Command Auron or ask a question..."
-                    className="flex-1 bg-transparent p-3 outline-none text-white font-mono text-sm placeholder-gray-600"
+                    className="flex-1 bg-transparent p-2 outline-none text-white font-mono text-sm"
                   />
-                  <button className="p-3 text-gray-400 hover:text-cyan-400 transition">🎙️</button>
-                  <button onClick={handleExecute} className="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-400 hover:text-black px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold text-sm transition">
-                    SEND
+                  <button onClick={handleExecute} className="bg-cyan-500/20 text-cyan-400 px-4 py-2 rounded-xl font-bold text-sm transition hover:bg-cyan-400 hover:text-black">SEND</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* VIEW: MEMORY VAULT (New Addition) */}
+            {activeTab === "VAULT" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full">
+                <div className="bg-[#0f1115] border border-gray-800 rounded-3xl p-6 md:p-8">
+                  <h2 className="text-xl font-mono text-gray-300 mb-6 border-b border-gray-800 pb-4">MEMORY VAULT</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {['Physics_Notes_Chapter4.pdf', 'WBJEE_Previous_Years.pdf', 'Termux_Security_Logs.txt', 'System_Config.json'].map((file, i) => (
+                      <div key={i} className="flex items-center gap-4 p-4 border border-gray-800 rounded-xl hover:border-purple-500/50 transition cursor-pointer bg-[#0a0c10]">
+                        <span className="text-3xl">{file.includes('pdf') ? '📕' : file.includes('txt') ? '📄' : '⚙️'}</span>
+                        <div>
+                          <p className="text-sm text-gray-300">{file}</p>
+                          <p className="text-xs text-gray-600 font-mono mt-1">Vectorized • Ready</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="mt-8 w-full border border-dashed border-gray-700 p-8 rounded-2xl text-gray-500 font-mono text-sm hover:border-cyan-500 hover:text-cyan-500 transition">
+                    + UPLOAD KNOWLEDGE TO NEURAL CORE
                   </button>
                 </div>
               </motion.div>
@@ -239,7 +250,6 @@ export default function AuronOS() {
                       <h2 className="text-xl font-mono text-gray-300">SECURITY MONITOR</h2>
                       <span className="px-4 py-1 bg-green-500/10 text-green-500 border border-green-500/30 rounded-full font-mono text-xs">STATUS: SAFE</span>
                     </div>
-                    
                     <div className="mb-8">
                       <p className="text-gray-500 font-mono text-xs mb-2">NETWORK TRAFFIC ANALYSIS</p>
                       <div className="flex gap-1 h-12 items-end">
@@ -250,16 +260,23 @@ export default function AuronOS() {
                         ))}
                       </div>
                     </div>
-
                     <div>
                       <p className="text-gray-500 font-mono text-xs mb-4">RECENT EVENT LOGS</p>
                       <div className="space-y-3 font-mono text-xs text-gray-400">
-                        <p className="flex gap-4"><span className="text-cyan-500">[14:05:22]</span> <span>Firewall rules updated via Agent.</span></p>
-                        <p className="flex gap-4"><span className="text-cyan-500">[14:02:10]</span> <span>Admin login verified (IP: Localhost).</span></p>
-                        <p className="flex gap-4"><span className="text-purple-500">[13:45:00]</span> <span>Scheduled Termux script execution successful.</span></p>
+                        <p className="flex gap-4"><span className="text-cyan-500">[14:05:22]</span> <span>Firewall rules updated.</span></p>
+                        <p className="flex gap-4"><span className="text-cyan-500">[14:02:10]</span> <span>Admin login verified.</span></p>
                       </div>
                     </div>
                  </div>
+              </motion.div>
+            )}
+
+            {/* VIEW: FALLBACK FOR OTHER TABS */}
+            {["AGENTS", "AUTO"].includes(activeTab) && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col items-center justify-center opacity-50">
+                <div className="text-6xl mb-6">⚙️</div>
+                <h2 className="text-2xl font-mono text-cyan-500 tracking-widest mb-2">MODULE OFFLINE</h2>
+                <p className="text-gray-400 font-mono text-sm">This subsystem is under construction.</p>
               </motion.div>
             )}
 
@@ -267,9 +284,9 @@ export default function AuronOS() {
         </div>
 
         {/* -------------------------------------- */}
-        {/* MOBILE BOTTOM NAVIGATION (Hidden on Desktop) */}
+        {/* MOBILE BOTTOM NAVIGATION (Fixed to bottom) */}
         {/* -------------------------------------- */}
-        <nav className="lg:hidden absolute bottom-0 w-full bg-[#050505]/95 backdrop-blur-xl border-t border-gray-800 flex justify-around p-2 pb-6 z-50">
+        <nav className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-xl border-t border-gray-800 flex justify-around p-2 pb-6 z-50">
           {[
             { id: "HOME", icon: "🏠", label: "Home" },
             { id: "AI", icon: "🧠", label: "AI Core" },
